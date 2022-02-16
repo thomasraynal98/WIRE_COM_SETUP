@@ -1,9 +1,12 @@
-import wiringpi
+import serial
 import time
 
-wiringpi.wiringPiSetup()
-serial = wiringpi.serialOpen('/dev/ttyS0',9600)
+ser = serial.Serial('/dev/ttyS0', 9600)
+i = 0
+msg = 'FROM RP4'
 
 while(True):
-    wiringpi.serialPuts(serial,'hello world!')
+    mode = msg + " [" + str(i) + "]\n"
+    ser.write(mode.encode('utf-8'))
     time.sleep(1)
+    i += 1
