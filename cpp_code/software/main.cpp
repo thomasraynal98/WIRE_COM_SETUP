@@ -14,12 +14,14 @@ std::string device_name;
 void talk_function()
 {
     //! CHRONO TIMER VARIABLE
-    int frequency       = 1;                              // en Hz.
+    int frequency       = 100;                              // en Hz.
     double time_of_loop = 1000/frequency;                  // en milliseconde.
     std::chrono::high_resolution_clock::time_point last_loop_time = std::chrono::high_resolution_clock::now();
     std::chrono::high_resolution_clock::time_point x              = std::chrono::high_resolution_clock::now();
     auto next = std::chrono::high_resolution_clock::now();
     //! CHRONO TIMER VARIABLE
+
+    int i = 0;
 
     while(true)
     {
@@ -30,8 +32,7 @@ void talk_function()
         std::this_thread::sleep_until(next);
         //! CHRONO TIMER VARIABLE
 
-        std::string message = "[MESSAGE FROM " + device_name;
-        int i = 0;
+        std::string message = "MESSAGE FROM " + device_name;
 
         if(&connection != NULL)
         {
@@ -44,7 +45,7 @@ void talk_function()
             // std::streamsize taille = 100;
             // char msg[] = "MSG";
             connection.Write(msg_id_s);
-            i++;
+            i += 1;
         }
     }
 }
@@ -71,7 +72,7 @@ void read_function()
 
 int main(int argc, char** argv)
 {
-    device_name = argv[0];
+    device_name = argv[1];
     connection.Open("/dev/ttyS0");
 
     connection.SetBaudRate(LibSerial::BaudRate::BAUD_115200);
