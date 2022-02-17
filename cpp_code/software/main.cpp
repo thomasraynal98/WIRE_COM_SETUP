@@ -6,11 +6,9 @@
 #include <unistd.h>
 #include <cstring>
 
-#include "lib.h"
-
 std::thread thread_A, thread_B;
 std::chrono::high_resolution_clock::time_point ping_time, pong_time;
-LibSerial::SerialStream* connection;
+LibSerial::SerialPort connection;
 std::string device_name;
 
 void talk_function()
@@ -35,17 +33,17 @@ void talk_function()
         std::string message = "[MESSAGE FROM " + device_name;
         int i = 0;
 
-        if(connection != NULL)
+        if(&connection != NULL)
         {
             std::string msg_id_s = message + " [" + std::to_string(i) + "]\n";
-            int n = msg_id_s.length();
-            char char_array[n + 1];
-            strcpy(char_array, msg_id_s.c_str());
-            // char *msg_id = new char[msg_id_s.length() + 1];
-            // std::strcpy(msg_id, msg_id_s.c_str());
-            std::streamsize taille = 100;
+            // int n = msg_id_s.length();
+            // char char_array[n + 1];
+            // strcpy(char_array, msg_id_s.c_str());
+            // // char *msg_id = new char[msg_id_s.length() + 1];
+            // // std::strcpy(msg_id, msg_id_s.c_str());
+            // std::streamsize taille = 100;
             // char msg[] = "MSG";
-            connection->write(char_array, taille);
+            connection.Write(msg_id_s);
             i++;
         }
     }
@@ -53,16 +51,16 @@ void talk_function()
 
 void read_function()
 {
-    char reponse[30];
+    std::string reponse;
     char stop = '\n';
     std::streamsize taille = 100;
 
     while(true)
     {
-        if(connection != NULL)
+        if(&connection != NULL)
         {
-            connection->getline(reponse, taille, stop);
-            std::cout << "[NEW_RECEPTION]>" << reponse << std::endl;
+            connection.ReadLine(reponse, stop);
+            std::cout << "[NEW_RECEPTION]> " << reponse << std::endl;
         }
         else
         {
@@ -74,12 +72,12 @@ void read_function()
 int main(int argc, char** argv)
 {
     device_name = argv[0];
+    connection.Open("/dev/ttyS0");
 
-    connection->Open("/dev/ttyS0");
-    connection->SetBaudRate(LibSerial::BaudRate::BAUD_115200);
-    connection->SetCharacterSize(LibSerial::CharacterSize::CHAR_SIZE_8);
-    connection->SetStopBits(LibSerial::StopBits::STOP_BITS_1);
-    connection->SetParity(LibSerial::Parity::PARITY_NONE);
+    connection.SetBaudRate(LibSerial::BaudRate::BAUD_115200);
+    connection.SetCharacterSize(LibSerial::CharacterSize::CHAR_SIZE_8);
+    connection.SetStopBits(LibSerial::StopBits::STOP_BITS_1);
+    connection.SetParity(LibSerial::Parity::PARITY_NONE);
 
     thread_A = std::thread(&talk_function);
     thread_B = std::thread(&read_function);

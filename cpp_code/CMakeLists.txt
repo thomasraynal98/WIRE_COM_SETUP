@@ -4,7 +4,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.7)
 PROJECT(wire_com_setup VERSION 1.0)
 
 # include directories.
-INCLUDE_DIRECTORIES(include)
+# INCLUDE_DIRECTORIES(include)
 
 # set good gcc version.
 set(CMAKE_CXX_STANDARD 11)
